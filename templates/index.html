@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot - EasyLink India</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .chat-container {
+            width: 350px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        #chat-box {
+            height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .chat-message {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .bot {
+            background-color: #f1f1f1;
+            text-align: left;
+        }
+        .user {
+            background-color: #d1e7dd;
+            text-align: right;
+        }
+        input, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        #details-section {
+            display: none;
+            margin-top: 15px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>EasyLink India Virtual Assistant</h2>
+        <div id="chat-box">
+            <div class="chat-message bot">
+                Hi!! I am your Virtual Assistant. How can I help you today?<br><br>
+                Here are my services:<br>
+                - Web Presence Engineering<br>
+                - Web Design Development<br>
+                - UI / UX Solutions<br>
+                - Ecommerce Solutions<br>
+                - Mobile Web-Based Apps<br>
+                - Digital Marketing<br>
+                - SEO<br>
+                - SMO / SMM<br>
+                - IT Development and Services<br>
+                - Cyber Security Service<br><br>
+                For Price details, please visit: 
+                <a href="https://www.easylinkindia.com/digital-marketing-packages-india.php" target="_blank">Click Here</a>
+            </div>
+        </div>
+
+        <input type="text" id="user-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Send</button>
+
+        <div id="details-section">
+            <h3>Enter Your Details:</h3>
+            <form id="details-form">
+                <input type="text" id="name" placeholder="Name" required><br>
+                <input type="email" id="email" placeholder="Email" required><br>
+                <input type="text" id="company" placeholder="Company Name"><br>
+                <button type="submit">Submit</button>
+            </form>
+            <p id="confirmation-message" style="display: none; color: green; font-weight: bold;">
+                Thank you! Have a great day!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            let userInput = document.getElementById("user-input").value.trim();
+            if (!userInput) return;
+
+            let chatBox = document.getElementById("chat-box");
+
+            // Append user message
+            let userMessage = document.createElement("div");
+            userMessage.className = "chat-message user";
+            userMessage.textContent = userInput;
+            chatBox.appendChild(userMessage);
+
+            document.getElementById("user-input").value = "";
+            document.getElementById("user-input").focus();
+
+            // Fetch chatbot response
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: userInput })
+            });
+
+            let data = await response.json();
+            let botMessage = document.createElement("div");
+            botMessage.className = "chat-message bot";
+            botMessage.innerHTML = data.response;
+            chatBox.appendChild(botMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Show form if bot asks for details
+            if (data.response.toLowerCase().includes("your details")) {
+                document.getElementById("details-section").style.display = "block";
+            }
+        }
+
+        document.getElementById("details-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            document.getElementById("confirmation-message").style.display = "block";
+
+            setTimeout(() => {
+                document.getElementById("details-section").style.display = "none";
+                document.getElementById("confirmation-message").style.display = "none";
+            }, 2000);
+
+            document.getElementById("details-form").reset();
+        });
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>
